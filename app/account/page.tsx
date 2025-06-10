@@ -1,36 +1,85 @@
 // app/account/page.tsx
-import Link from 'next/link'
+'use client'
+import { useSelector, useDispatch } from 'react-redux'
+import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
+import { RootState } from '../store/store'
+import { logout } from '../store/authSlice'
+import Header from '@/components/header'
 
 export default function AccountPage() {
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
+  const { notes } = useSelector((state: RootState) => state.notes)
+  const dispatch = useDispatch()
+  const router = useRouter()
+
+  const handleLogout = () => {
+    dispatch(logout())
+    router.push('/signin')
+  }
+
+  if (!isAuthenticated || !user) {
+    router.push('/signin')
+    return null
+  }
+
   return (
-    <div>
-      <header className="header">
-        <div className="container">
-          <div className="header-content">
-            <div className="logo">Keep Notes</div>
-            <nav className="nav-links">
-              <Link href="/about" className="nav-link">About</Link>
-              <Link href="/" className="nav-link">Notes</Link>
-              <Link href="/account" className="nav-link">Account</Link>
-              <Link href="/login" className="nav-link">Login</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-orange-50">
+      <Header currentPage="Account" />
       
-      <div className="container">
-        <div className="breadcrumb">
-          <Link href="/">Homepage</Link> / Account
-        </div>
-        
-        <main style={{ padding: '40px 0' }}>
-          <h1 style={{ fontSize: '28px', marginBottom: '20px', color: '#333' }}>
-            Account Settings
-          </h1>
-          <p style={{ fontSize: '16px', lineHeight: '1.6', color: '#666' }}>
-            Manage your account settings and preferences here.
-          </p>
-        </main>
+      <div className="container mx-auto px-6 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-2xl mx-auto"
+        >
+          <h1 className="text-3xl font-semibold text-gray-800 mb-6">Account Settings</h1>
+          
+          <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
+            <div>
+              <h2 className="text-xl font-medium text-gray-800 mb-4">Profile Information</h2>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Username</label>
+                  <p className="text-gray-900">{user.username}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Email</label>
+                  <p className="text-gray-900">{user.email}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">User ID</label>
+                  <p className="text-gray-500 text-sm">{user.id}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h2 className="text-xl font-medium text-gray-800 mb-4">Statistics</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-2xl font-bold text-gray-800">{notes.length}</p>
+                  <p className="text-sm text-gray-600">Total Notes</p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-2xl font-bold text-gray-800">
+                    {new Date().toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-gray-600">Member Since</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="pt-4 border-t">
+              <button
+                onClick={handleLogout}
+                className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   )

@@ -1,10 +1,8 @@
-import type { Metadata } from 'next'
+// app/layout.tsx
+'use client'
 import './globals.css'
-
-export const metadata: Metadata = {
-  title: 'Keep Notes',
-  description: 'A simple note-taking application',
-}
+import { Provider } from 'react-redux'
+import { store } from './store/store'
 
 export default function RootLayout({
   children,
@@ -13,7 +11,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Provider store={store}>
+          {children}
+        </Provider>
+      </body>
     </html>
   )
 }
