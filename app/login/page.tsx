@@ -12,7 +12,6 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Simple validation - in real app, you'd authenticate with backend
     if (email && password) {
       router.push('/')
     }
