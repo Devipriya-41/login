@@ -51,10 +51,10 @@ export default function AddNoteModal({ isOpen, onClose }: AddNoteModalProps) {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-orange-100 rounded-lg p-6 w-96 max-w-md mx-4"
+            className="bg-orange-100 rounded-lg w-96 max-w-md mx-4"
           >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-800">Add Notes</h2>
+            <div className="flex justify-between bg-orange-200 items-center px-6 py-2 mb-4 border-b border-black-200">
+              <h2 className="text-lg font-medium text-gray-800  ">Add Notes</h2>
               <button
                 onClick={onClose}
                 className="text-red-400 hover:text-red-600"
@@ -65,13 +65,13 @@ export default function AddNoteModal({ isOpen, onClose }: AddNoteModalProps) {
               </button>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-4 px-6 py-4">
               <input
                 type="text"
                 placeholder="Test"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-black-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
               
               <textarea
@@ -79,10 +79,10 @@ export default function AddNoteModal({ isOpen, onClose }: AddNoteModalProps) {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 rows={6}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full px-3 py-2 border border-black-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white "
               />
               
-              <div className="flex justify-center space-x-3">
+              <div className="flex justify-end space-x-3">
                 <button
                   onClick={handleSubmit}
                   className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
