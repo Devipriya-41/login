@@ -1,103 +1,190 @@
-import Image from "next/image";
+// app/page.tsx
+'use client'
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import { useState } from 'react'
+import Link from 'next/link'
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+interface Note {
+  id: string
+  title: string
+  content: string
+  createdAt: Date
+}
+
+export default function HomePage() {
+  const [notes, setNotes] = useState<Note[]>([])
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  const addNote = () => {
+    const title = prompt('Enter note title:')
+    const content = prompt('Enter note content:')
+    
+    if (title && content) {
+      const newNote: Note = {
+        id: Date.now().toString(),
+        title,
+        content,
+        createdAt: new Date()
+      }
+      setNotes([...notes, newNote])
+    }
+  }
+
+  const deleteNote = (id: string) => {
+    setNotes(notes.filter(note => note.id !== id))
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div>
+        <header className="header">
+          <div className="container">
+            <div className="header-content">
+              <div className="logo">Keep Notes</div>
+              <nav className="nav-links">
+                <Link href="/about" className="nav-link">About</Link>
+                <Link href="/" className="nav-link">Notes</Link>
+                <Link href="/account" className="nav-link">Account</Link>
+                <Link href="/login" className="nav-link">Login</Link>
+              </nav>
+            </div>
+          </div>
+        </header>
+        
+        <div className="container">
+          <div className="breadcrumb">
+            <Link href="/">Homepage</Link> / Login Page
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <main className="main-content">
+          <div className="login-container">
+            <div className="login-header">
+              Login
+              <div className="window-controls">
+                <div className="window-control red"></div>
+                <div className="window-control yellow"></div>
+                <div className="window-control green"></div>
+              </div>
+            </div>
+            
+            <h1 className="login-title">Login</h1>
+            
+            <form onSubmit={(e) => {
+              e.preventDefault()
+              setIsLoggedIn(true)
+            }}>
+              <div className="form-group">
+                <label className="form-label">Email</label>
+                <input 
+                  type="email" 
+                  className="form-input" 
+                  placeholder="Email"
+                  required
+                />
+              </div>
+              
+              <div className="form-group">
+                <label className="form-label">Password</label>
+                <input 
+                  type="password" 
+                  className="form-input" 
+                  placeholder="Password"
+                  required
+                />
+              </div>
+              
+              <div className="button-group">
+                <button type="submit" className="btn btn-primary">Login</button>
+                <Link href="/register">
+                  <button type="button" className="btn btn-secondary">Register</button>
+                </Link>
+              </div>
+            </form>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <header className="header">
+        <div className="container">
+          <div className="header-content">
+            <div className="logo">Keep Notes</div>
+            <nav className="nav-links">
+              <Link href="/about" className="nav-link">About</Link>
+              <Link href="/" className="nav-link">Notes</Link>
+              <Link href="/account" className="nav-link">Account</Link>
+              <button 
+                onClick={() => setIsLoggedIn(false)} 
+                className="nav-link" 
+                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                Logout
+              </button>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <div className="container">
+        <div className="breadcrumb">
+          <Link href="/">Homepage</Link> / Notes
+        </div>
+        
+        <main>
+          <h1 style={{ margin: '20px 0', fontSize: '24px', color: '#333' }}>
+            My Notes
+          </h1>
+          
+          {notes.length === 0 ? (
+            <p style={{ textAlign: 'center', color: '#666', margin: '40px 0' }}>
+              No notes yet. Click the + button to create your first note!
+            </p>
+          ) : (
+            <div className="notes-grid">
+              {notes.map((note) => (
+                <div key={note.id} className="note-card">
+                  <h3 className="note-title">{note.title}</h3>
+                  <p className="note-content">{note.content}</p>
+                  <div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}>
+                    <button 
+                      onClick={() => {
+                        const newTitle = prompt('Edit title:', note.title)
+                        const newContent = prompt('Edit content:', note.content)
+                        if (newTitle && newContent) {
+                          setNotes(notes.map(n => 
+                            n.id === note.id 
+                              ? { ...n, title: newTitle, content: newContent }
+                              : n
+                          ))
+                        }
+                      }}
+                      className="btn btn-secondary"
+                      style={{ fontSize: '12px', padding: '4px 8px' }}
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => deleteNote(note.id)}
+                      className="btn btn-primary"
+                      style={{ fontSize: '12px', padding: '4px 8px' }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </main>
+      </div>
+
+      <button onClick={addNote} className="add-note-btn">
+        +
+      </button>
     </div>
-  );
+  )
 }
