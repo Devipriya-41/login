@@ -1,13 +1,19 @@
-// app/page.tsx
+
 'use client'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from './store/store'
+import { initializeAuth } from './store/authSlice'
 
 export default function HomePage() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth)
+  const dispatch = useDispatch()
   const router = useRouter()
+
+  useEffect(() => {
+     dispatch(initializeAuth())
+  }, [dispatch])
 
   useEffect(() => {
     if (isAuthenticated) {

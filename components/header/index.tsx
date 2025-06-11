@@ -1,26 +1,29 @@
-'use client'
-import { useSelector, useDispatch } from 'react-redux'
-import { useRouter } from 'next/navigation'
-import { RootState } from '@/app/store/store'
-import { logout } from '@/app/store/authSlice'
+"use client";
+import { useSelector, useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+import { RootState } from "@/app/store/store";
+import { logout } from "@/app/store/authSlice";
 
 interface HeaderProps {
-  currentPage?: string
+  currentPage?: string;
 }
 
-export default function Header({ currentPage = 'Notes' }: HeaderProps) {
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth)
-  const dispatch = useDispatch()
-  const router = useRouter()
+export default function Header({ currentPage = "Notes" }: HeaderProps) {
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
+  const router = useRouter();
 
   const handleLogout = () => {
-    dispatch(logout())
-    router.push('/signin')
-  }
+    localStorage.clear();
+    sessionStorage.clear();
+    dispatch(logout());
+
+    router.push("/signin");
+  };
 
   const handleNavigation = (path: string) => {
-    router.push(path)
-  }
+    router.push(path);
+  };
 
   return (
     <header className="bg-teal-300 px-6 py-4">
@@ -38,34 +41,34 @@ export default function Header({ currentPage = 'Notes' }: HeaderProps) {
           </div>
         </div>
         <nav className="flex space-x-6">
-          <button 
-            onClick={() => handleNavigation('/about')}
+          <button
+            onClick={() => handleNavigation("/about")}
             className="text-gray-700 hover:text-gray-900"
           >
             About
           </button>
-          <button 
-            onClick={() => handleNavigation('/notes')}
+          <button
+            onClick={() => handleNavigation("/notes")}
             className="text-gray-700 hover:text-gray-900"
           >
             Notes
           </button>
-          <button 
-            onClick={() => handleNavigation('/account')}
+          <button
+            onClick={() => handleNavigation("/account")}
             className="text-gray-700 hover:text-gray-900"
           >
             Account
           </button>
           {isAuthenticated ? (
-            <button 
+            <button
               onClick={handleLogout}
               className="text-gray-700 hover:text-gray-900"
             >
               Logout
             </button>
           ) : (
-            <button 
-              onClick={() => handleNavigation('/signin')}
+            <button
+              onClick={() => handleNavigation("/signin")}
               className="text-gray-700 hover:text-gray-900"
             >
               Login
@@ -74,5 +77,5 @@ export default function Header({ currentPage = 'Notes' }: HeaderProps) {
         </nav>
       </div>
     </header>
-  )
+  );
 }
