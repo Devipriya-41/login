@@ -14,8 +14,6 @@ export default function Header({ currentPage = "Notes" }: HeaderProps) {
   const router = useRouter();
 
   const handleLogout = () => {
-    localStorage.clear();
-    sessionStorage.clear();
     dispatch(logout());
 
     router.push("/signin");

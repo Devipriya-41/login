@@ -1,26 +1,49 @@
-// app/account/page.tsx
 'use client'
 import { useSelector, useDispatch } from 'react-redux'
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { RootState } from '../store/store'
-import { logout } from '../store/authSlice'
+import { initializeAuth, logout } from '../store/authSlice'
+import { loadUserNotes, clearNotes } from '../store/notesSlice'
 import Header from '@/components/header'
 
 export default function AccountPage() {
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
   const { notes } = useSelector((state: RootState) => state.notes)
+  const [authInitialized, setAuthInitialized] = useState(false)
   const dispatch = useDispatch()
   const router = useRouter()
 
+  useEffect(() => {
+    dispatch(initializeAuth())
+    setAuthInitialized(true)
+  }, [dispatch])
+
+  useEffect(() => {
+    if (authInitialized && !isAuthenticated) {
+      router.push('/signin')
+      return
+    }
+  }, [authInitialized, isAuthenticated, router])
+
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      dispatch(loadUserNotes(user.id))
+    }
+  }, [isAuthenticated, user?.id, dispatch])
+
   const handleLogout = () => {
     dispatch(logout())
+    dispatch(clearNotes())
     router.push('/signin')
   }
-
-  if (!isAuthenticated || !user) {
-    router.push('/signin')
-    return null
+  if (!authInitialized || !isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen bg-orange-50 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    )
   }
 
   return (
@@ -65,7 +88,7 @@ export default function AccountPage() {
                   <p className="text-2xl font-bold text-gray-800">
                     {new Date().toLocaleDateString()}
                   </p>
-                  <p className="text-sm text-gray-600">Member Since</p>
+                  <p className="text-sm text-gray-600">Current Date</p>
                 </div>
               </div>
             </div>

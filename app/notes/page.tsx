@@ -1,12 +1,11 @@
-// app/notes/page.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { RootState } from "../store/store";
-// import { setNotes } from "../store/notesSlice";
-import { Note } from "../store/notesSlice";
+import { initializeAuth } from "../store/authSlice";
+import { loadUserNotes, clearNotes, Note } from "../store/notesSlice";
 import Header from "@/components/header";
 import NoteCard from "@/components/noteCard";
 import AddNoteModal from "@/components/addNoteModal";
@@ -16,6 +15,8 @@ export default function NotesPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [authInitialized, setAuthInitialized] = useState(false);
+
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.auth
   );
@@ -24,22 +25,24 @@ export default function NotesPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    dispatch(initializeAuth());
+    setAuthInitialized(true);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (authInitialized && !isAuthenticated) {
       router.push("/signin");
       return;
     }
+  }, [authInitialized, isAuthenticated, router]);
 
-    // const mockNotes: Note[] = [
-    //   {
-    //     id: "1",
-    //     title: "Test",
-    //     content: "Hello World",
-    //     lastModified: "2024-09-09",
-    //     userId: user?.id || "1",
-    //   },
-    // ];
-    // dispatch(setNotes());
-  }, [isAuthenticated, router, dispatch, user]);
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      dispatch(loadUserNotes(user.id));
+    } else if (!isAuthenticated) {
+      dispatch(clearNotes());
+    }
+  }, [isAuthenticated, user?.id, dispatch]);
 
   const handleNoteClick = (note: Note) => {
     setSelectedNote(note);
@@ -50,8 +53,12 @@ export default function NotesPage() {
     setShowAddModal(true);
   };
 
-  if (!isAuthenticated) {
-    return null;
+  if (!authInitialized || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-orange-50 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
   }
 
   return (
@@ -88,7 +95,6 @@ export default function NotesPage() {
         </motion.div>
       </div>
 
-      {/* Floating Add Button */}
       <motion.button
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}

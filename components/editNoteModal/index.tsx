@@ -1,8 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { updateNote, deleteNote } from '@/app/store/notesSlice'
+import { RootState } from '@/app/store/store'
 import { Note } from '@/app/store/notesSlice'
 
 interface EditNoteModalProps {
@@ -15,6 +16,7 @@ export default function EditNoteModal({ isOpen, onClose, note }: EditNoteModalPr
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const dispatch = useDispatch()
+  const { user } = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
     if (note) {
@@ -23,9 +25,9 @@ export default function EditNoteModal({ isOpen, onClose, note }: EditNoteModalPr
     }
   }, [note])
 
-  const handleSave = () => {
-    if (title.trim() && content.trim() && note) {
-      const updatedNote = {
+  const handleUpdate = () => {
+    if (title.trim() && content.trim() && note && user) {
+      const updatedNote: Note = {
         ...note,
         title: title.trim(),
         content: content.trim(),
@@ -37,13 +39,12 @@ export default function EditNoteModal({ isOpen, onClose, note }: EditNoteModalPr
   }
 
   const handleDelete = () => {
-    if (note) {
-      dispatch(deleteNote(note.id))
+    if (note && user) {
+      dispatch(deleteNote({ noteId: note.id, userId: user.id }))
       onClose()
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleCancel = () => {
     if (note) {
       setTitle(note.title)
@@ -67,10 +68,10 @@ export default function EditNoteModal({ isOpen, onClose, note }: EditNoteModalPr
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-orange-100 rounded-lg p-6 w-96 max-w-md mx-4"
+            className="bg-orange-100 rounded-lg w-96 max-w-md mx-4"
           >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-800">Test</h2>
+            <div className="flex justify-between bg-orange-200 items-center px-6 py-2 mb-4 border-b border-black-200">
+              <h2 className="text-lg font-medium text-gray-800">Edit Note</h2>
               <button
                 onClick={onClose}
                 className="text-red-400 hover:text-red-600"
@@ -80,28 +81,46 @@ export default function EditNoteModal({ isOpen, onClose, note }: EditNoteModalPr
                 </svg>
               </button>
             </div>
-            
-            <div className="space-y-4">
+
+            <div className="space-y-4 px-6 py-4">
+              <input
+                type="text"
+                placeholder="Note title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full px-3 py-2 border border-black-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              />
+
               <textarea
+                placeholder="Note content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                rows={8}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                rows={6}
+                className="w-full px-3 py-2 border border-black-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white"
               />
-              
-              <div className="flex justify-center space-x-3">
-                <button
-                  onClick={handleSave}
-                  className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
-                >
-                  Save
-                </button>
+
+              <div className="flex justify-between">
                 <button
                   onClick={handleDelete}
-                  className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                  className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
                 >
                   Delete
                 </button>
+                
+                <div className="flex space-x-3">
+                  <button
+                    onClick={handleUpdate}
+                    className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={handleCancel}
+                    className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>
